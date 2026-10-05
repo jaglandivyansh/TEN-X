@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TEN X</title>
+<meta name="theme-color" content="#12171c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="TEN X">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;700;800&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9ecee;--panel:#fff;--ink:#12171c;--mute:#5a656e;--line:#cfd5da;--hold:#b07d0e;--relax:#1c7d85;--ok:#17874a;--bad:#c23b2e;--ring:#12171c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1216;--panel:#171d23;--ink:#eaeef0;--mute:#93a0aa;--line:#2a333b;--hold:#e3b743;--relax:#4cc3cb;--ok:#3ecf80;--bad:#ff6b5b;--ring:#eaeef0}}
+:root[data-theme="dark"]{--bg:#0e1216;--panel:#171d23;--ink:#eaeef0;--mute:#93a0aa;--line:#2a333b;--hold:#e3b743;--relax:#4cc3cb;--ok:#3ecf80;--bad:#ff6b5b;--ring:#eaeef0}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:400 16px/1.5 Barlow,system-ui,sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px}
+.view[hidden]{display:none}
+h1,h2,.d{font-family:'Saira Condensed',Impact,sans-serif;font-weight:800;letter-spacing:.2px}
+h1{font-size:44px;line-height:1;margin:6px 0 4px}
+h2{font-size:28px;margin:0}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back{padding:8px 14px;font-size:16px}
+.sub{color:var(--mute);margin:0 0 14px}
+.hero{display:block;width:min(74vw,290px);margin:10px auto 18px}
+.menu{display:grid;gap:10px}
+.mb{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font:inherit}
+.mb svg{width:34px;height:34px;flex:none;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mb b{display:block;font:800 24px/1.1 'Saira Condensed',Impact,sans-serif}
+.mb span{color:var(--mute);font-size:14px}
+.mb.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.mb.main svg{stroke:var(--bg)}.mb.main span{color:var(--bg);opacity:.75}
+button{font:700 19px 'Saira Condensed',Impact,sans-serif;padding:11px 18px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button.p{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible,.mb:focus-visible{outline:3px solid var(--relax);outline-offset:2px}
+.cam{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:4/3}
+.cam video,.cam canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.cam.tall{aspect-ratio:3/4}.cam.mir video,.cam.mir canvas{transform:scaleX(-1)}.frame{position:absolute;inset:8% 24%;border:2px dashed #fff9;border-radius:16px;pointer-events:none}.vrow{margin:10px 0 0}
+.msg{position:absolute;left:8px;right:8px;bottom:8px;background:#000b;color:#fff;padding:6px 10px;border-radius:8px;font-size:14px}
+.chips{position:absolute;top:8px;left:8px;display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:#000b;color:#fff;border-radius:20px;padding:2px 10px;font:700 15px 'Saira Condensed',sans-serif}
+.chip.g{background:#17874acc}.chip.r{background:#c23b2ecc}
+.dial{position:relative;width:min(66vw,260px);aspect-ratio:1;margin:16px auto 8px}
+.dial svg{width:100%;height:100%}
+.dial .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.big{font:800 80px/1 'Saira Condensed',Impact,sans-serif}
+.ph{font:800 26px 'Saira Condensed',Impact,sans-serif;letter-spacing:1px}
+.breath{position:absolute;left:25%;top:25%;width:50%;aspect-ratio:1;border-radius:50%;background:var(--relax);opacity:.12;transform:scale(.6)}
+.cue{text-align:center;color:var(--mute);min-height:26px;margin:0 0 10px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:flex;flex-direction:column;font-size:14px;color:var(--mute);gap:4px}
+input,select{font:inherit;font-size:17px;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+.lv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.lv button{font-size:16px;padding:8px 4px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.bars{display:flex;align-items:flex-end;gap:5px;height:110px;border-bottom:1px solid var(--line)}
+.bars div{flex:1;background:var(--relax);border-radius:4px 4px 0 0;min-height:3px}
+.note{color:var(--mute);font-size:14px}.good{color:var(--ok)}.warn{color:var(--bad)}
+.guide li{margin-bottom:8px}
+button,.mb{transition:transform .12s,background .15s}button:active,.mb:active{transform:scale(.97)}
+.view:not([hidden]){animation:vin .25s ease}@keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.stats3 div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}.stats3 b{display:block;font:800 28px/1 'Saira Condensed',Impact,sans-serif}.stats3 span{font-size:12px;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){.view:not([hidden]){animation:none}button,.mb{transition:none}}
+.mb[hidden]{display:none}.rg{padding:4px;font-size:14px;width:auto}#cr td,#res td,#res th,#rec td,#rec th,#cr th{font-size:13px;padding:6px 3px}
+</style></head><body><main>
+
+<section class="view" id="v-home">
+<svg class="hero" viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke="var(--ring)" stroke-width="3"><circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="74"/><circle cx="100" cy="100" r="56"/><circle cx="100" cy="100" r="38"/></g><circle cx="100" cy="100" r="20" fill="var(--hold)"/><path d="M92 92l16 16M108 92l-16 16" stroke="var(--panel)" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="92" fill="none" stroke="var(--relax)" stroke-width="6" stroke-dasharray="290 289" transform="rotate(-90 100 100)"/><path d="M100 4v34M100 162v34M4 100h34M162 100h34" stroke="var(--ring)" stroke-width="3"/></svg>
+<h1 style="letter-spacing:.08em">TEN X</h1><div class="d" style="font-size:16px;letter-spacing:.2em;color:var(--mute);margin:2px 0 8px">AIR PISTOL TRAINING</div><p class="sub" id="homeSub">Hold. Breathe. Press.</p>
+<div class="menu">
+<button class="mb main" data-go="settings"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg><div><b>Start training</b><span id="trSub">Set up hold timing, then start the camera</span></div></button>
+<button class="mb" data-go="history"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><div><b>Progress</b><span>Last session and history</span></div></button>
+<button class="mb" data-go="guide"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3zM5 17a3 3 0 013-3h11"/></svg><div><b>How to use</b><span>Camera setup and score meaning</span></div></button>
+<button class="mb" id="inst" hidden><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 20h14"/></svg><div><b>Install app</b><span>Add TEN X to your home screen</span></div></button>
+</div>
+<p class="note" style="text-align:center;margin-top:20px">Built with ❤️ by Aman</p></section>
+
+<section class="view" id="v-train" hidden>
+<div class="top"><button class="back" data-go="settings">Back</button><h2>Training</h2></div>
+<div class="cam mir" id="cam"><video id="v" playsinline muted></video><canvas id="cv"></canvas><div class="frame" id="guide" hidden></div>
+<div class="chips"><span class="chip" id="cAng">Angle --</span><span class="chip" id="cArm">Arm --</span><span class="chip" id="cSh">Shoulders --</span><span class="chip" id="cWob">Steady --</span><span class="chip" id="cTrack">Track --</span></div>
+<div class="msg" id="msg">Camera is off. Tap “Camera on”. Video stays on your device.</div></div>
+<div class="row vrow"><button id="flip">Flip camera</button><button id="mirBtn">Mirror: on</button><button id="tallBtn">Tall view</button><button id="cal">Calibrate</button></div>
+<div class="dial"><svg viewBox="0 0 200 200"><g fill="none" stroke="var(--line)" stroke-width="2"><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="44"/></g><circle cx="100" cy="100" r="86" fill="none" stroke="var(--line)" stroke-width="10"/><circle id="arc" cx="100" cy="100" r="86" fill="none" stroke="var(--hold)" stroke-width="10" stroke-linecap="round" stroke-dasharray="540.4" transform="rotate(-90 100 100)"/></svg>
+<div class="breath" id="breath"></div><div class="c"><div class="ph" id="ph">READY</div><div class="big" id="t">--</div><div class="note" id="rs">Set 1 · Rep 1</div></div></div>
+<p class="cue" id="cue">Stand side-on or front-on with arm and shoulders in view.</p>
+<p class="note" id="plan" style="text-align:center;margin:0 0 10px"></p>
+<div class="row"><button id="camBtn">Camera on</button><button id="go" class="p">Start session</button><button id="pause">Pause</button><button id="stop">Stop</button></div>
+<div class="panel" id="sumBox" hidden style="margin-top:14px"><b class="d" style="font-size:22px">Session complete</b><p id="sum" style="margin:6px 0 10px"></p><button data-go="history">See details</button></div>
+</section>
+
+<section class="view" id="v-settings" hidden>
+<div class="top"><button class="back" data-go="home">Back</button><h2>Set up training</h2></div>
+<div class="panel"><div class="grid" id="fields"></div></div>
+<div class="panel"><div class="grid"><label>Training mode<select id="f_mode"><option value="0">Hold drill</option><option value="1">Shot routine</option></select></label><label>Shooting arm<select id="f_arm"><option value="R">Right</option><option value="L">Left</option></select></label><label>Voice cues<select id="f_voice"><option value="1">Voice + beeps</option><option value="0">Beeps only</option></select></label><label>Hold alerts<select id="f_alert"><option value="1">Tone when arm drops</option><option value="0">Off</option></select></label></div></div>
+<div class="panel"><button id="snd">Test sound</button><p class="note" id="sndn" style="margin:8px 0 0">You should hear a high beep, a low beep, then a voice. If not: raise media volume, turn off silent mode, and make sure the page is not muted. Voice may not work in every browser, but beeps still do.</p></div>
+<div class="panel"><b class="d" style="font-size:22px">My plans</b><div class="row" style="margin-top:8px"><input id="pn" placeholder="Plan name" style="flex:1;width:auto"><button id="psv">Save current</button></div><div id="pl"></div></div>
+<div class="panel"><b class="d" style="font-size:22px">Levels</b><div class="lv" id="lv"></div><p class="note" id="lvn">Pick a level to set hold time and reps.</p></div>
+<button class="p" data-go="train" style="width:100%;font-size:22px;padding:14px">Continue to training</button>
+</section>
+
+<section class="view" id="v-history" hidden>
+<div class="top"><button class="back" data-go="home">Back</button><h2>Progress</h2></div>
+<div class="stats3" id="tot"></div>
+<div class="panel"><b class="d" style="font-size:22px">Steadiness by session</b><div class="bars" id="bars"></div><p class="note" id="hnote"></p></div>
+<div class="panel"><b class="d" style="font-size:22px">Last session</b><p id="lsum" class="note"></p><table><thead><tr><th>Set·Rep</th><th>In zone</th><th>Steady</th><th>Height</th><th>Sway</th><th>Follow</th><th>Ring</th></tr></thead><tbody id="res"></tbody></table><input id="lnote" placeholder="Session note (e.g. tired, new grip)" maxlength="60" style="margin-top:10px"><p class="note" style="margin:10px 0 4px">Steadiness per hold</p><div class="bars" id="fbars"></div></div>
+<div class="panel"><b class="d" style="font-size:22px">Recent sessions</b><table><thead><tr><th>Date</th><th>Steady</th><th>Zone</th><th>Ring</th><th>Note</th></tr></thead><tbody id="rec"></tbody></table><p class="note" id="byh"></p></div>
+<div class="panel"><b class="d" style="font-size:22px">Share with coach</b><p class="note" style="margin:4px 0 8px">Creates a link with your last sessions, including scores and notes. Anyone with the link can read them. No account or server is used.</p><input id="an" placeholder="Your name (optional)" maxlength="30"><div class="row" style="justify-content:flex-start;margin-top:8px"><button id="mk">Create link</button><button id="shr">Share</button></div><input id="lk" readonly style="margin-top:8px" placeholder="Link appears here"></div>
+<div class="row" style="justify-content:flex-start"><button id="cpy">Copy my data</button><button id="clr">Clear history</button></div>
+</section>
+
+<section class="view" id="v-guide" hidden>
+<div class="top"><button class="back" data-go="home">Back</button><h2>How to use</h2></div>
+<div class="panel"><ol class="guide"><li>Place the phone at chest height, 2 to 3 metres away, side-on or front-on.</li><li>Keep your shooting arm and both shoulders in view, with good light.</li><li>Shot routine mode: breathe in and out to relax, breathe in while raising the arm, breathe out and settle to aim, press, then keep the arm up for the follow-through. Use dry-fire (unloaded) only and follow your range's safety rules. A hold of 6 to 8 seconds suits one breath.</li><li>Optional: turn the camera on, raise your arm straight and tap Calibrate. The app then fits the straight-arm angle to you.</li><li>Press Start session. Hold when you hear the high beep, relax on the low beep.</li></ol></div>
+<div class="panel"><b class="d" style="font-size:22px">What the scores mean</b><ul class="guide"><li><b>In zone:</b> share of the hold your elbow was straight.</li><li><b>Steady:</b> 0 to 100, higher means less wrist wobble.</li><li><b>Height:</b> “Dropped” means your arm sank during the hold.</li><li><b>Sway:</b> body movement side to side.</li></ul><p class="note">It checks posture only, not sights or the pistol. Stop if your arm or shoulder hurts.</p></div>
+<div class="panel"><b class="d" style="font-size:22px">Add to home screen</b><p class="note" style="margin:6px 0 0">Android Chrome: menu (⋮) then Add to Home screen. iPhone Safari: Share then Add to Home Screen. On a hosted copy of TEN X, an Install app button appears on the home page, and the timer may work offline after one online use. Otherwise these steps make a shortcut.</p></div>
+<p class="note" style="text-align:center">TEN X · Built by Aman</p>
+</section>
+<section class="view" id="v-coach" hidden><div class="top"><h2>Coach view</h2></div><p class="sub" id="cn"></p><div class="stats3" id="ct"></div><div class="panel"><b class="d" style="font-size:22px">Steadiness by session</b><div class="bars" id="cb"></div></div><div class="panel"><table><thead><tr><th>Date</th><th>Steady</th><th>Zone</th><th>Hold</th><th>Ring</th><th>Note</th></tr></thead><tbody id="cr"></tbody></table></div><button id="cx" data-go="home">Open TEN X</button></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const D={hold:10,relax:10,reps:5,sets:2,rest:30,thr:160,arm:'R',voice:'1',alert:'1',mode:'0',calm:8,raise:4,fol:3,goal:4};
+let S=Object.assign({},D,store.get('S',{}));
+const F=[['hold','Hold (sec)',3,60],['relax','Relax (sec)',3,60],['reps','Reps per set',1,30],['sets','Sets',1,10],['rest','Rest (sec)',5,180],['thr','Straight angle ≥',140,178],['calm','Routine: breathe (sec)',2,30],['raise','Routine: raise (sec)',2,15],['fol','Routine: follow-through (sec)',1,10],['goal','Weekly goal (sessions)',1,21]];
+const LV=[[5,5],[8,5],[10,6],[12,6],[15,8],[20,8]];
+let pose,camOn=false,stream=null,cur={ok:false},run=null,samples=[],facing='user',mirror=true;
+// navigation
+function show(n){if(n!=='train')leaveTrain();document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='v-'+n);window.scrollTo(0,0);if(n==='history')drawHist();if(n==='home')homeInfo();if(n==='settings')fill();if(n==='train')$('plan').textContent=(S.mode==='1'?'Shot routine · ':'')+S.hold+'s hold · '+S.relax+'s relax · '+S.reps+' reps × '+S.sets+' sets'}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)show(b.dataset.go)});
+function leaveTrain(){if(run){clearInterval(run.timer);run=null}rel();camStop();try{speechSynthesis.cancel()}catch(e){}}
+// settings
+const fd=$('fields');F.forEach(f=>{const l=document.createElement('label');l.innerHTML=f[1]+'<input id="f_'+f[0]+'" type="number" min="'+f[2]+'" max="'+f[3]+'">';fd.appendChild(l)});
+function fill(){F.forEach(f=>$('f_'+f[0]).value=S[f[0]]);$('f_arm').value=S.arm;$('f_voice').value=S.voice;$('f_alert').value=S.alert;$('f_mode').value=S.mode}
+function readS(){F.forEach(f=>{const v=+$('f_'+f[0]).value;if(v>=f[2]&&v<=f[3])S[f[0]]=v});S.arm=$('f_arm').value;S.voice=$('f_voice').value;S.alert=$('f_alert').value;S.mode=$('f_mode').value;store.set('S',S)}
+document.querySelectorAll('#v-settings input,#v-settings select').forEach(i=>i.onchange=readS);
+LV.forEach((l,i)=>{const b=document.createElement('button');b.textContent='L'+(i+1)+' · '+l[0]+'s×'+l[1];b.onclick=()=>{S.hold=l[0];S.reps=l[1];store.set('S',S);fill();$('lvn').textContent='Level '+(i+1)+' set: '+l[0]+'s holds, '+l[1]+' reps.'};$('lv').appendChild(b)});
+function homeInfo(){const ss=store.get('sess',[]),d0=new Date();d0.setHours(0,0,0,0);const wk=new Date(d0);wk.setDate(d0.getDate()-((d0.getDay()+6)%7));
+ const n=ss.filter(t=>t>=wk.getTime()).length,days=new Set(ss.map(t=>{const x=new Date(t);x.setHours(0,0,0,0);return x.getTime()}));
+ let st=0;const c=new Date(d0);if(!days.has(c.getTime()))c.setDate(c.getDate()-1);while(days.has(c.getTime())){st++;c.setDate(c.getDate()-1)}
+ $('homeSub').textContent=ss.length?'This week '+n+'/'+S.goal+' sessions · Streak '+st+(st===1?' day':' days'):'Hold. Breathe. Press.'}
+// audio
+const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+let wl=null;const rel=()=>{try{wl&&wl.release()}catch(e){}wl=null};
+let ac;function unlock(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state!=='running')ac.resume()}catch(e){}}
+['pointerdown','touchend','keydown'].forEach(ev=>document.addEventListener(ev,unlock,{passive:true}));
+function beep(f=880,d=.12){try{unlock();const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+function say(s){if(S.voice!=='1')return;try{const u=new SpeechSynthesisUtterance(s);u.lang='en-IN';speechSynthesis.cancel();setTimeout(()=>speechSynthesis.speak(u),250)}catch(e){}}
+// pose
+const ang=(a,b,c)=>{const p=[a.x-b.x,a.y-b.y],q=[c.x-b.x,c.y-b.y],m=Math.hypot(...p)*Math.hypot(...q);return m?Math.acos(Math.max(-1,Math.min(1,(p[0]*q[0]+p[1]*q[1])/m)))*180/Math.PI:0};
+const ang3=(a,b,c)=>{const p=[a.x-b.x,a.y-b.y,a.z-b.z],q=[c.x-b.x,c.y-b.y,c.z-b.z],m=Math.hypot(...p)*Math.hypot(...q);return m?Math.acos(Math.max(-1,Math.min(1,(p[0]*q[0]+p[1]*q[1]+p[2]*q[2])/m)))*180/Math.PI:0};
+function rms(a){const m=a.reduce((s,x)=>s+x,0)/a.length;return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/a.length)}
+function steady(sm){if(sm.length<3)return 0;return Math.round(Math.max(0,Math.min(100,100-Math.hypot(rms(sm.map(s=>s.wx)),rms(sm.map(s=>s.wy)))*600)))}
+function chip(id,t,ok){const c=$(id);c.textContent=t;c.className='chip'+(ok===true?' g':ok===false?' r':'')}
+function onResults(r){
+ const cv=$('cv'),v=$('v');cv.width=v.videoWidth;cv.height=v.videoHeight;const x=cv.getContext('2d');x.clearRect(0,0,cv.width,cv.height);
+ const L=r.poseLandmarks,msg=$('msg');$('guide').hidden=false;
+ if(!L){cur={ok:false};msg.hidden=false;msg.textContent='No body found. Step back so shoulders and arm are visible.';return}
+ const R=S.arm==='R',W=cv.width,H=cv.height,P=q=>({x:q.x*W,y:q.y*H});
+ const s0=L[R?12:11],e0=L[R?14:13],w0=L[R?16:15];
+ if(Math.min(s0.visibility,e0.visibility,w0.visibility)<.5){cur={ok:false};msg.hidden=false;msg.textContent='Arm not clearly visible. Improve light or move back.';return}
+ const edge=[s0,e0,w0,L[R?11:12]].some(q=>q.x<.03||q.x>.97||q.y<.03||q.y>.97);
+ chip('cTrack','Track '+Math.round(Math.min(s0.visibility,e0.visibility,w0.visibility)*100)+'%');
+ msg.hidden=!edge;if(edge)msg.textContent='Arm or shoulder is at the frame edge. Move back or turn the phone.';
+ $('guide').hidden=true;
+ const s=P(s0),e=P(e0),w=P(w0),o=P(L[R?11:12]);
+ const W3=r.poseWorldLandmarks,i0=R?12:11,a=W3?ang3(W3[i0],W3[i0+2],W3[i0+4]):ang(s,e,w),straight=a>=S.thr,sw=Math.max(Math.hypot(s.x-o.x,s.y-o.y),W*.08),level=Math.abs(s.y-o.y)/sw<.15;
+ cur={ok:true,ang:a,straight,level,wx:w.x/sw,wy:w.y/sw,mx:(s.x+o.x)/2/sw,t:performance.now()};
+ x.lineWidth=5;x.lineCap='round';x.strokeStyle=straight?'#2ecc71':'#ff5a4a';x.beginPath();x.moveTo(s.x,s.y);x.lineTo(e.x,e.y);x.lineTo(w.x,w.y);x.stroke();
+ x.strokeStyle=level?'#8fd3ff':'#ffb347';x.beginPath();x.moveTo(s.x,s.y);x.lineTo(o.x,o.y);x.stroke();
+ x.fillStyle='#fff';[s,e,w].forEach(q=>{x.beginPath();x.arc(q.x,q.y,6,0,7);x.fill()});
+ if(run&&!run.paused&&run.ph==='hold')samples.push({wx:cur.wx,wy:cur.wy,mx:cur.mx});
+ chip('cAng',Math.round(a)+'°');chip('cArm',straight?'Straight':'Bent',straight);chip('cSh',level?'Level':'Uneven',level);
+ if(run&&run.ph==='hold'&&samples.length>6)chip('cWob','Steady '+steady(samples.slice(-15)));
+}
+async function camStart(){
+ if(camOn)return;
+ try{const v=$('v');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:640,height:480},audio:false});v.srcObject=stream;await v.play();
+ pose=pose||new Pose({locateFile:f=>'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/'+f});
+ pose.setOptions({modelComplexity:1,smoothLandmarks:true,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(onResults);
+ camOn=true;$('camBtn').textContent='Camera off';$('msg').hidden=false;$('msg').textContent='Loading pose model…';
+ const loop=async()=>{if(!camOn)return;try{await pose.send({image:v})}catch(e){}requestAnimationFrame(loop)};loop();
+ }catch(e){$('msg').hidden=false;$('msg').textContent='Camera blocked or unavailable. Allow permission, or open this page in your own browser. The timer still works.'}
+}
+function camStop(){camOn=false;cur={ok:false};if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('camBtn').textContent='Camera on';$('guide').hidden=true;if($('msg')){$('msg').hidden=false;$('msg').textContent='Camera is off.'}const c=$('cv');c.getContext('2d').clearRect(0,0,c.width,c.height)}
+$('camBtn').onclick=()=>camOn?camStop():camStart();
+// session
+const PH={ready:['GET READY','var(--mute)'],hold:['HOLD','var(--hold)'],calm:['BREATHE','var(--relax)'],raise:['RAISE','var(--hold)'],shot:['PRESS + FOLLOW','var(--ok)'],relax:['RELAX','var(--relax)'],rest:['SET REST','var(--mute)']};
+function setPhase(p,sec){run.ph=p;run.left=run.tot=sec;run.zone=0;run.bad=0;run.warned=0;run.drop=false;
+ $('ph').textContent=PH[p][0];$('arc').style.stroke=PH[p][1];$('rs').textContent='Set '+run.set+' · Rep '+run.rep;
+ const b=$('breath');b.style.transition='none';b.style.transform='scale(.6)';b.style.opacity=(p==='relax'||p==='calm'||p==='raise')?.3:.12;
+ if(p==='hold'){samples=[];beep(1000,.2);vib([250]);say(run.c.mode==='1'?'Aim. Breathe out and settle':'Hold')}
+ if(p==='shot'){beep(1200,.3);vib([300]);say('Press the trigger. Follow through')}
+ if(p==='relax'||p==='calm'||p==='raise'){beep(p==='raise'?800:500,.25);vib([100,80,100]);say(p==='calm'?'Breathe in, and out':p==='raise'?'Breathe in. Raise your arm':'Relax. Breathe in');requestAnimationFrame(()=>{b.style.transition='transform 4s ease-in-out';b.style.transform='scale(1.15)'});run.exh=false}
+}
+function startSession(){
+ if(run)return;readS();$('pause').textContent='Pause';beep(660);$('sumBox').hidden=true;try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>{wl=l}).catch(()=>{})}catch(e){}
+ run={set:1,rep:1,res:[],last:performance.now(),c:{mode:S.mode,calm:S.calm,raise:S.raise,fol:S.fol,H:S.hold,Rl:S.relax,reps:S.reps,sets:S.sets,rest:S.rest}};samples=[];
+ setPhase('ready',5);say('Get ready');run.timer=setInterval(tick,100);
+}
+function tick(){
+ if(!run)return;if(run.paused){run.last=performance.now();return}const now=performance.now(),dt=Math.min(.5,(now-run.last)/1000);run.last=now;run.left-=dt;
+ if(run.ph==='hold'&&cur.ok&&performance.now()-cur.t<600&&cur.straight)run.zone+=dt;
+ if(run.ph==='hold'&&S.alert==='1'&&camOn&&cur.ok&&!cur.straight){run.bad+=dt;if(run.bad>=1.5){beep(300,.25);run.bad=-1.5}}else if(run.ph==='hold'&&run.bad>0)run.bad=0;
+ if(run.ph==='shot'&&camOn&&cur.ok&&!cur.straight)run.drop=true;
+ if((run.ph==='relax'||run.ph==='calm')&&!run.exh&&run.left<=run.tot-4){run.exh=true;const b=$('breath');b.style.transition='transform 6s ease-in-out';b.style.transform='scale(.6)'}
+ const L=Math.max(0,run.left);$('t').textContent=Math.ceil(L);$('arc').style.strokeDashoffset=540.4*(1-L/run.tot);
+ $('cue').textContent=run.ph!=='hold'?({relax:'Lower the arm and breathe.',calm:'Breathe in slowly, then out. Relax your body.',raise:'Breathe in and raise your arm to the target.',shot:'Press smoothly and keep your arm up. Dry-fire only.'}[run.ph]||'Get into position.'):!camOn?'Camera is off, so only the timer runs.':!cur.ok?'Body not detected.':!cur.straight?'Straighten your arm.':!cur.level?'Arm straight. Level your shoulders.':'Good. Hold steady.';
+ if(L<=3&&!run.warned&&(run.ph==='relax'||run.ph==='ready')){run.warned=1;beep(700,.06)}
+ if(run.left<=0)next();
+}
+function finishHold(){
+ const c=run.c;let st=null,dr='n/a',sw='n/a';
+ if(samples.length>8){st=steady(samples);const k=Math.max(3,Math.floor(samples.length/5)),av=(a,key)=>a.reduce((s,x)=>s+x[key],0)/a.length;
+  dr=av(samples.slice(-k),'wy')-av(samples.slice(0,k),'wy')>.15?'Dropped':'Held';sw=rms(samples.map(s=>s.mx))<.06?'Low':'High'}
+ run.res.push({id:run.set+'·'+run.rep,pct:camOn?Math.round(run.zone/c.H*100):null,st,dr,sw});
+}
+function after(){const c=run.c,last=run.rep>=c.reps;if(last&&run.set>=c.sets)return end();if(last){say('Set done. Rest');return setPhase('rest',c.rest)}return setPhase('relax',c.Rl)}
+function next(){
+ const c=run.c,Rt=c.mode==='1',first=Rt?['calm',c.calm]:['hold',c.H];
+ if(run.ph==='ready')return setPhase(...first);
+ if(run.ph==='calm')return setPhase('raise',c.raise);
+ if(run.ph==='raise')return setPhase('hold',c.H);
+ if(run.ph==='hold'){finishHold();return Rt?setPhase('shot',c.fol):after()}
+ if(run.ph==='shot'){run.res[run.res.length-1].ft=camOn?(run.drop?'Dropped':'Held'):'n/a';return after()}
+ if(run.ph==='relax'){run.rep++;return setPhase(...first)}
+ if(run.ph==='rest'){run.set++;run.rep=1;setPhase(...first)}
+}
+function end(){
+ const T=Date.now();rel();clearInterval(run.timer);const r=run.res,c=run.c;beep(900,.4);say('Session complete');
+ let msg=r.length+' holds of '+c.H+'s done.';
+ const zs=r.filter(x=>x.pct!==null).map(x=>x.pct),ss=r.filter(x=>x.st!==null).map(x=>x.st);
+ if(zs.length){const az=Math.round(zs.reduce((a,b)=>a+b,0)/zs.length),as=ss.length?Math.round(ss.reduce((a,b)=>a+b,0)/ss.length):0;
+  msg+=' Arm in zone '+az+'%, steadiness '+as+'/100.';
+  if(ss.length>=4){const h=ss.length>>1,av=a=>a.reduce((x,y)=>x+y,0)/a.length,d=Math.round(av(ss.slice(-h))-av(ss.slice(0,h)));if(d<=-8)msg+=' Steadiness fell '+(-d)+' points late in the session, so try shorter holds or more rest.';else if(d>=8)msg+=' Steadiness rose '+d+' points as you warmed up.'}
+  const h=store.get('hist',[]);h.push({d:T,az,as,hold:c.H,n:r.length});store.set('hist',h.slice(-30));
+  if(az>=85&&as>=70){S.hold=Math.min(60,c.H+2);store.set('S',S);msg+=' Strong session. Hold time raised to '+S.hold+'s.'}
+  else msg+=' Repeat this level until zone is 85%+ and steadiness 70+.'}
+ store.set('last',{d:T,res:r,msg});store.set('sess',[...store.get('sess',[]),Date.now()].slice(-300));
+ $('sum').textContent=msg;$('sumBox').hidden=false;$('ph').textContent='DONE';$('t').textContent='✓';$('arc').style.strokeDashoffset=0;run=null;
+}
+$('go').onclick=startSession;
+$('pause').onclick=()=>{if(!run)return;run.paused=!run.paused;$('pause').textContent=run.paused?'Resume':'Pause';if(run.paused){try{speechSynthesis.cancel()}catch(e){}$('cue').textContent='Paused.'}else run.last=performance.now()};
+$('stop').onclick=()=>{rel();$('pause').textContent='Pause';if(run){clearInterval(run.timer);run=null;$('ph').textContent='STOPPED';$('t').textContent='--';try{speechSynthesis.cancel()}catch(e){}}};
+// history
+function drawHist(){const h=store.get('hist',[]),b=$('bars');b.innerHTML='';
+ $('tot').innerHTML=[[store.get('sess',[]).length,'Sessions'],[h.length?Math.max(...h.map(x=>x.as)):'-','Best steadiness'],[h.length?Math.round(h.reduce((a,x)=>a+x.az,0)/h.length)+'%':'-','Avg arm in zone']].map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('');
+ h.slice(-12).forEach(s=>{const d=document.createElement('div');d.style.height=Math.max(3,s.as)+'%';d.title=new Date(s.d).toLocaleDateString()+': steadiness '+s.as+', zone '+s.az+'%';b.appendChild(d)});
+ $('hnote').textContent=h.length?h.length+' camera sessions saved. Bars show steadiness (0 to 100).':'No camera sessions saved yet.';
+ const l=store.get('last',null),t=$('res');t.innerHTML='';extra(l);
+ if(!l){$('lsum').textContent='Finish a session to see per-rep results.';return}
+ $('lsum').textContent=new Date(l.d).toLocaleString()+'. '+l.msg;
+ l.res.forEach((r,i)=>{const tr=document.createElement('tr');tr.innerHTML='<td>'+r.id+'</td><td>'+(r.pct===null?'n/a':r.pct+'%')+'</td><td>'+(r.st===null?'n/a':r.st)+'</td><td class="'+(r.dr==='Dropped'?'warn':'')+'">'+r.dr+'</td><td class="'+(r.sw==='High'?'warn':'')+'">'+r.sw+'</td><td class="'+(r.ft==='Dropped'?'warn':'')+'">'+(r.ft||'-')+'</td><td><select class="rg" data-i="'+i+'" aria-label="Ring score">'+RG.map(v=>'<option'+(String(r.sc||'')===v?' selected':'')+'>'+v+'</option>').join('')+'</select></td>';t.appendChild(tr)})}
+let ck=0;$('clr').onclick=()=>{if(!ck){ck=1;$('clr').textContent='Tap again to confirm';setTimeout(()=>{ck=0;$('clr').textContent='Clear history'},3000);return}ck=0;$('clr').textContent='Clear history';store.set('hist',[]);store.set('last',null);store.set('sess',[]);drawHist()};
+$('cpy').onclick=async()=>{const h=store.get('hist',[]),t='date,steadiness,zone,hold_sec,holds\n'+h.map(x=>[new Date(x.d).toISOString().slice(0,10),x.as,x.az,x.hold,x.n].join(',')).join('\n');try{await navigator.clipboard.writeText(t);$('hnote').textContent='Copied '+h.length+' sessions. Paste into Notes or a sheet.'}catch(e){$('hnote').textContent='Copy is blocked here. Open the page in your own browser and try again.'}};
+function applyView(){$('cam').classList.toggle('mir',mirror);$('mirBtn').textContent='Mirror: '+(mirror?'on':'off')}
+$('mirBtn').onclick=()=>{mirror=!mirror;applyView()};
+$('tallBtn').onclick=()=>{const t=$('cam').classList.toggle('tall');$('tallBtn').textContent=t?'Wide view':'Tall view'};
+$('flip').onclick=async()=>{facing=facing==='user'?'environment':'user';mirror=facing==='user';applyView();if(camOn){camStop();await camStart()}};
+$('cal').onclick=()=>{if(run||!camOn){$('cue').textContent=run?'Stop the session first.':'Turn the camera on first.';return}
+ const a=[];let n=0;say('Hold your arm straight');$('cue').textContent='Hold your arm straight for 5 seconds…';
+ const id=setInterval(()=>{if(cur.ok)a.push(cur.ang);if(++n>=50){clearInterval(id);
+  if(a.length<20){$('cue').textContent='Could not see your arm. Improve framing and try again.';return}
+  a.sort((x,y)=>x-y);const m=a[a.length>>1];S.thr=Math.max(140,Math.min(178,Math.round(m-8)));store.set('S',S);
+  $('cue').textContent='Calibrated: straight arm now counts at '+S.thr+'° or more (yours read '+Math.round(m)+'°).';beep(900,.2)}},100)};
+const PK=['hold','relax','reps','sets','rest','calm','raise','fol','mode'];
+function drawPlans(){const P=store.get('plans',[]),b=$('pl');b.innerHTML='';P.forEach((p,i)=>{const w=document.createElement('div');w.className='row';w.style.marginTop='8px';const l=document.createElement('button');l.textContent=p.n+(p.mode==='1'?' · routine':'')+' · '+p.hold+'s×'+p.reps+'×'+p.sets;l.style.flex='1';l.onclick=()=>{PK.forEach(k=>S[k]=p[k]);store.set('S',S);fill()};const x=document.createElement('button');x.textContent='×';x.setAttribute('aria-label','Delete plan');x.onclick=()=>{P.splice(i,1);store.set('plans',P);drawPlans()};w.append(l,x);b.appendChild(w)})}
+$('psv').onclick=()=>{readS();const P=store.get('plans',[]),p={n:$('pn').value.trim()||'Plan '+(P.length+1)};PK.forEach(k=>p[k]=S[k]);store.set('plans',[...P,p].slice(-8));$('pn').value='';drawPlans()};
+$('snd').onclick=()=>{readS();beep(1000,.2);setTimeout(()=>beep(500,.25),400);setTimeout(()=>say('Sound check'),700)};
+const RG=['','6','7','8','9','10','X'];
+function syncHist(l){const v=l.res.map(x=>x.sc).filter(Boolean).map(x=>x==='X'?10:+x),h=store.get('hist',[]),e=h.find(x=>x.d===l.d);if(e){e.sc=v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length*10)/10:null;e.note=l.note||'';store.set('hist',h)}}
+function extra(l){$('an').value=S.name||'';const h=store.get('hist',[]),rc=$('rec');rc.innerHTML='';
+ h.slice(-8).reverse().forEach(x=>{const tr=document.createElement('tr');[new Date(x.d).toLocaleDateString(),x.as,x.az+'%',x.sc??'-',x.note||''].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});rc.appendChild(tr)});
+ const g={};h.filter(x=>x.sc!=null).forEach(x=>{(g[x.hold]=g[x.hold]||[]).push(x.sc)});const k=Object.keys(g).sort((a,b)=>a-b);
+ $('byh').textContent=k.length>1?'Average ring by hold length: '+k.map(x=>x+'s → '+Math.round(g[x].reduce((a,b)=>a+b,0)/g[x].length*10)/10+' ('+g[x].length+')').join(' · '):'Log ring scores for two or more hold lengths to compare them here.';
+ const f=$('fbars');f.innerHTML='';$('lnote').value=l&&l.note||'';
+ if(l)l.res.forEach(r=>{const d=document.createElement('div');d.style.height=Math.max(3,r.st||0)+'%';d.title='Hold '+r.id+': steadiness '+(r.st??'n/a');f.appendChild(d)});
+ setTimeout(()=>document.querySelectorAll('.rg').forEach(e=>e.onchange=()=>{const L=store.get('last',null);if(!L)return;L.res[+e.dataset.i].sc=e.value;store.set('last',L);syncHist(L);extra(L)}),0)}
+$('lnote').onchange=()=>{const L=store.get('last',null);if(!L)return;L.note=$('lnote').value.trim();store.set('last',L);syncHist(L);extra(L)};
+// coach sharing
+const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const dec=t=>JSON.parse(decodeURIComponent(escape(atob(t.replace(/-/g,'+').replace(/_/g,'/')))));
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+function mkLink(){S.name=$('an').value.trim();store.set('S',S);const h=store.get('hist',[]).slice(-20);if(!h.length){$('lk').value='';$('hnote').textContent='Finish a session with the camera on first, then create the link.';return ''}
+ const u=location.href.split('#')[0]+'#coach='+enc({n:S.name,s:h.map(x=>[x.d,x.az,x.as,x.hold,x.n,x.sc??null,(x.note||'').slice(0,60)])});$('lk').value=u;return u}
+$('mk').onclick=mkLink;
+$('shr').onclick=async()=>{const u=mkLink();if(!u)return;try{if(navigator.share)await navigator.share({title:'TEN X training',url:u});else{await navigator.clipboard.writeText(u);$('hnote').textContent='Link copied.'}}catch(e){$('lk').select();$('hnote').textContent='Copy the link from the box.'}};
+function coachView(t){try{const o=dec(t),s=o.s.map(x=>x.map((v,i)=>i===6?String(v||'').slice(0,60):(v==null?null:Number(v))));if(!s.length)throw 0;
+ $('cn').textContent=(o.n?String(o.n).slice(0,30)+' · ':'')+s.length+' sessions · read-only';
+ const as=s.map(x=>x[2]),az=Math.round(s.reduce((a,x)=>a+x[1],0)/s.length);
+ $('ct').innerHTML=[[s.length,'Sessions'],[Math.max(...as),'Best steadiness'],[az+'%','Avg in zone']].map(x=>'<div><b>'+esc(x[0])+'</b><span>'+x[1]+'</span></div>').join('');
+ const b=$('cb');b.innerHTML='';as.forEach(v=>{const d=document.createElement('div');d.style.height=Math.max(3,v)+'%';b.appendChild(d)});
+ $('cr').innerHTML=s.slice().reverse().map(x=>'<tr>'+[new Date(x[0]).toLocaleDateString(),x[2],x[1]+'%',x[3]+'s×'+x[4],x[5]??'-',x[6]].map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('');show('coach')}
+ catch(e){$('cn').textContent='This coach link could not be read.';show('coach')}}
+$('cx').addEventListener('click',()=>history.replaceState(null,'',location.href.split('#')[0]));
+// install
+let dp=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('inst').hidden=false});
+$('inst').onclick=async()=>{if(!dp)return;dp.prompt();try{await dp.userChoice}catch(e){}dp=null;$('inst').hidden=true};
+try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
+fill();homeInfo();drawPlans();if(location.hash.startsWith('#coach='))coachView(location.hash.slice(7));
+</script></body></html>
