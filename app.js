@@ -1,6 +1,6 @@
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const D={hold:10,relax:10,reps:5,sets:2,rest:30,thr:160,arm:'R',voice:'1',alert:'1',mode:'0',calm:8,raise:4,fol:3,goal:4,xth:10.5,name:''};
+const D={hold:10,relax:10,reps:5,sets:2,rest:30,thr:160,arm:'R',voice:'1',alert:'1',mode:'0',calm:8,raise:4,fol:3,goal:4,xth:10.5,name:'',cq:'1'};
 let S=Object.assign({},D,store.get('S',{}));
 const F=[['hold','Hold (sec)',3,60],['relax','Relax (sec)',3,60],['reps','Reps per set',1,30],['sets','Sets',1,10],['rest','Rest (sec)',5,180],['thr','Straight angle ≥',140,178],['calm','Routine: breathe (sec)',2,30],['raise','Routine: raise (sec)',2,15],['fol','Routine: follow-through (sec)',1,10],['goal','Weekly goal (sessions)',1,21]];
 const LV=[[5,5],[8,5],[10,6],[12,6],[15,8],[20,8]];
@@ -8,11 +8,16 @@ let pose,camOn=false,stream=null,cur={ok:false},run=null,samples=[],facing='user
 // navigation
 function show(n){if(n!=='train')leaveTrain();document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='v-'+n);document.querySelector('main').scrollTop=0;if(n==='history')drawHist();if(n==='home')homeInfo();if(n==='settings')fill();if(n==='train')$('plan').textContent=(S.mode==='1'?'Shot routine · ':'')+S.hold+'s hold · '+S.relax+'s relax · '+S.reps+' reps × '+S.sets+' sets'}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)show(b.dataset.go)});
-function leaveTrain(){if(run){clearInterval(run.timer);run=null}rel();camStop();try{speechSynthesis.cancel()}catch(e){}}
+function leaveTrain(){$('go')&&($('go').disabled=false);if(run){clearInterval(run.timer);run=null}rel();camStop();try{speechSynthesis.cancel()}catch(e){}}
 // settings
-const fd=$('fields');F.forEach(f=>{const l=document.createElement('label');l.innerHTML=f[1]+'<input id="f_'+f[0]+'" type="number" min="'+f[2]+'" max="'+f[3]+'">';fd.appendChild(l)});
-function fill(){F.forEach(f=>$('f_'+f[0]).value=S[f[0]]);$('f_arm').value=S.arm;$('f_voice').value=S.voice;$('f_alert').value=S.alert;$('f_mode').value=S.mode}
-function readS(){F.forEach(f=>{const v=+$('f_'+f[0]).value;if(v>=f[2]&&v<=f[3])S[f[0]]=v});S.arm=$('f_arm').value;S.voice=$('f_voice').value;S.alert=$('f_alert').value;S.mode=$('f_mode').value;store.set('S',S)}
+const FS=F.filter(f=>f[0]!=='goal'),FSTEP={rest:5},RT=['calm','raise','fol'];
+const fd=$('fields');FS.forEach(f=>{const l=document.createElement('div');l.className='lb';l.innerHTML='<span>'+f[1]+'</span><div class="stp"><button type="button" data-k="'+f[0]+'" data-d="-1" aria-label="Decrease '+f[1]+'">\u2212</button><input id="f_'+f[0]+'" type="number" inputmode="numeric" min="'+f[2]+'" max="'+f[3]+'" aria-label="'+f[1]+'"><button type="button" data-k="'+f[0]+'" data-d="1" aria-label="Increase '+f[1]+'">+</button></div>';fd.appendChild(l)});
+fd.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(!b)return;const f=F.find(x=>x[0]===b.dataset.k),i=$('f_'+f[0]);i.value=Math.min(f[3],Math.max(f[2],(+i.value||S[f[0]])+(FSTEP[f[0]]||1)*(+b.dataset.d)));readS()});
+function fieldVis(){RT.forEach(k=>{$('f_'+k).closest('.lb').hidden=S.mode!=='1'})}
+function estTime(){const r=S.reps,per=S.mode==='1'?S.calm+S.raise+S.hold+S.fol:S.hold,sec=5+S.sets*(r*per+(r-1)*S.relax)+(S.sets-1)*S.rest;$('est').textContent='About '+Math.max(1,Math.round(sec/60))+' min \u00b7 '+S.sets*r+' holds in total'+(S.mode==='1'?' (shot routine)':'')}
+function fill(){FS.forEach(f=>$('f_'+f[0]).value=S[f[0]]);$('f_arm').value=S.arm;$('f_voice').value=S.voice;$('f_alert').value=S.alert;$('f_mode').value=S.mode;$('f_cq').value=S.cq||'1';fieldVis();estTime()}
+function readS(){FS.forEach(f=>{const i=$('f_'+f[0]),v=+i.value;if(i.value!==''&&!isNaN(v)){S[f[0]]=Math.min(f[3],Math.max(f[2],Math.round(v)));i.value=S[f[0]]}else i.value=S[f[0]]});S.arm=$('f_arm').value;S.voice=$('f_voice').value;S.alert=$('f_alert').value;S.mode=$('f_mode').value;S.cq=$('f_cq').value;store.set('S',S);fieldVis();estTime()}
+let rk=0;$('rst').onclick=()=>{if(!rk){rk=1;$('rst').textContent='Tap again to reset';setTimeout(()=>{rk=0;$('rst').textContent='Reset to defaults'},3000);return}rk=0;$('rst').textContent='Reset to defaults';['hold','relax','reps','sets','rest','thr','calm','raise','fol','mode','voice','alert','cq'].forEach(k=>S[k]=D[k]);store.set('S',S);fill()};
 document.querySelectorAll('#v-settings input,#v-settings select').forEach(i=>i.onchange=readS);
 LV.forEach((l,i)=>{const b=document.createElement('button');b.textContent='L'+(i+1)+' · '+l[0]+'s×'+l[1];b.onclick=()=>{S.hold=l[0];S.reps=l[1];store.set('S',S);fill();$('lvn').textContent='Level '+(i+1)+' set: '+l[0]+'s holds, '+l[1]+' reps.'};$('lv').appendChild(b)});
 function homeInfo(){const ss=store.get('sess',[]),d0=new Date();d0.setHours(0,0,0,0);const wk=new Date(d0);wk.setDate(d0.getDate()-((d0.getDay()+6)%7));
@@ -55,26 +60,26 @@ function onResults(r){
 }
 async function camStart(){
  if(camOn)return;
- try{const v=$('v');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:640,height:480},audio:false});v.srcObject=stream;await v.play();
+ try{const v=$('v');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:640},height:{ideal:480}},audio:false});v.srcObject=stream;await v.play();
  pose=pose||new Pose({locateFile:f=>'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/'+f});
- pose.setOptions({modelComplexity:1,smoothLandmarks:true,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(onResults);
- camOn=true;$('camBtn').textContent='Camera off';$('msg').hidden=false;$('msg').textContent='Loading pose model…';
- const loop=async()=>{if(!camOn)return;try{await pose.send({image:v})}catch(e){}requestAnimationFrame(loop)};loop();
- }catch(e){$('msg').hidden=false;$('msg').textContent='Camera blocked or unavailable. Allow permission, or open this page in your own browser. The timer still works.'}
+ pose.setOptions({modelComplexity:S.cq==='0'?0:1,smoothLandmarks:true,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(onResults);
+ camOn=true;$('camBtn').textContent='Camera off';$('msg').hidden=false;$('msg').textContent='Loading pose model\u2026';
+ let lt=0;const loop=async()=>{if(!camOn)return;const t=performance.now();if(t-lt>=66&&v.readyState>=2){lt=t;try{await pose.send({image:v})}catch(e){}}requestAnimationFrame(loop)};loop();
+ }catch(e){const n=e&&e.name;$('msg').hidden=false;$('msg').textContent=n==='NotAllowedError'?'Camera permission was denied. Allow it in your browser or site settings, then tap Camera on. The timer still works.':n==='NotFoundError'?'No camera found on this device. The timer still works.':n==='NotReadableError'?'The camera is being used by another app. Close it and try again.':!window.isSecureContext?'The camera needs a secure (https) page. The timer still works.':'Camera unavailable. Open this page in your own browser. The timer still works.'}
 }
 function camStop(){camOn=false;cur={ok:false};if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('camBtn').textContent='Camera on';$('guide').hidden=true;if($('msg')){$('msg').hidden=false;$('msg').textContent='Camera is off.'}const c=$('cv');c.getContext('2d').clearRect(0,0,c.width,c.height)}
 $('camBtn').onclick=()=>camOn?camStop():camStart();
 // session
 const PH={ready:['GET READY','var(--mute)'],hold:['HOLD','var(--hold)'],calm:['BREATHE','var(--relax)'],raise:['RAISE','var(--hold)'],shot:['PRESS + FOLLOW','var(--ok)'],relax:['RELAX','var(--relax)'],rest:['SET REST','var(--mute)']};
 function setPhase(p,sec){run.ph=p;run.left=run.tot=sec;run.zone=0;run.bad=0;run.warned=0;run.drop=false;
- $('ph').textContent=PH[p][0];$('arc').style.stroke=PH[p][1];$('rs').textContent='Set '+run.set+' · Rep '+run.rep;
+ $('ph').textContent=PH[p][0];$('arc').style.stroke=PH[p][1];$('rs').textContent='Set '+run.set+' of '+run.c.sets+' \u00b7 Rep '+run.rep+' of '+run.c.reps;
  const b=$('breath');b.style.transition='none';b.style.transform='scale(.6)';b.style.opacity=(p==='relax'||p==='calm'||p==='raise')?.3:.12;
  if(p==='hold'){samples=[];beep(1000,.2);vib([250]);say(run.c.mode==='1'?'Aim. Breathe out and settle':'Hold')}
  if(p==='shot'){beep(1200,.3);vib([300]);say('Press the trigger. Follow through')}
  if(p==='relax'||p==='calm'||p==='raise'){beep(p==='raise'?800:500,.25);vib([100,80,100]);say(p==='calm'?'Breathe in, and out':p==='raise'?'Breathe in. Raise your arm':'Relax. Breathe in');requestAnimationFrame(()=>{b.style.transition='transform 4s ease-in-out';b.style.transform='scale(1.15)'});run.exh=false}
 }
 function startSession(){
- if(run)return;readS();$('pause').textContent='Pause';beep(660);$('sumBox').hidden=true;try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>{wl=l}).catch(()=>{})}catch(e){}
+ if(run)return;readS();$('go').disabled=true;$('pause').textContent='Pause';beep(660);$('sumBox').hidden=true;try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>{wl=l}).catch(()=>{})}catch(e){}
  run={set:1,rep:1,res:[],last:performance.now(),c:{mode:S.mode,calm:S.calm,raise:S.raise,fol:S.fol,H:S.hold,Rl:S.relax,reps:S.reps,sets:S.sets,rest:S.rest}};samples=[];
  setPhase('ready',5);say('Get ready');run.timer=setInterval(tick,100);
 }
@@ -107,7 +112,7 @@ function next(){
  if(run.ph==='rest'){run.set++;run.rep=1;setPhase(...first)}
 }
 function end(){
- const T=Date.now();rel();clearInterval(run.timer);const r=run.res,c=run.c;beep(900,.4);say('Session complete');
+ const T=Date.now();rel();$('go').disabled=false;clearInterval(run.timer);const r=run.res,c=run.c;beep(900,.4);say('Session complete');
  let msg=r.length+' holds of '+c.H+'s done.';
  const zs=r.filter(x=>x.pct!==null).map(x=>x.pct),ss=r.filter(x=>x.st!==null).map(x=>x.st);
  if(zs.length){const az=Math.round(zs.reduce((a,b)=>a+b,0)/zs.length),as=ss.length?Math.round(ss.reduce((a,b)=>a+b,0)/ss.length):0;
@@ -121,7 +126,7 @@ function end(){
 }
 $('go').onclick=startSession;
 $('pause').onclick=()=>{if(!run)return;run.paused=!run.paused;$('pause').textContent=run.paused?'Resume':'Pause';if(run.paused){try{speechSynthesis.cancel()}catch(e){}$('cue').textContent='Paused.'}else run.last=performance.now()};
-$('stop').onclick=()=>{rel();$('pause').textContent='Pause';if(run){clearInterval(run.timer);run=null;$('ph').textContent='STOPPED';$('t').textContent='--';try{speechSynthesis.cancel()}catch(e){}}};
+$('stop').onclick=()=>{rel();$('go').disabled=false;$('pause').textContent='Pause';if(run){clearInterval(run.timer);run=null;$('ph').textContent='STOPPED';$('t').textContent='--';try{speechSynthesis.cancel()}catch(e){}}};
 // history
 function drawHist(){const h=store.get('hist',[]),b=$('bars');b.innerHTML='';
  $('tot').innerHTML=[[store.get('sess',[]).length,'Sessions'],[h.length?Math.max(...h.map(x=>x.as)):'-','Best steadiness'],[h.length?Math.round(h.reduce((a,x)=>a+x.az,0)/h.length)+'%':'-','Avg arm in zone']].map(x=>'<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('');
@@ -323,3 +328,8 @@ addEventListener('popstate',e=>{const v=e.state&&e.state.v;navOn=false;
  navOn=true});
 fill();homeInfo();drawPlans();if(location.hash.startsWith('#coach='))coachView(location.hash.slice(7));
 dash();av();
+
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden){if(camOn){camStop();$('msg').textContent='Camera paused while the app was in the background. Tap Camera on to resume.'}
+  if(run&&!run.paused){run.paused=true;$('pause').textContent='Resume';$('cue').textContent='Paused.'}}
+ else if(run){try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>{wl=l}).catch(()=>{})}catch(e){}}});
