@@ -1,6 +1,6 @@
 // TEN X service worker. App files: network first, cached copy as the offline fallback.
 // Camera model files (/mediapipe/): cache first, in their own cache so app updates do not delete them.
-const V = 'tenx-v7', M = 'tenx-models';
+const V = 'tenx-v8', M = 'tenx-models';
 const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(FILES.map(f => c.add(f).catch(() => {})))).then(() => self.skipWaiting()));
