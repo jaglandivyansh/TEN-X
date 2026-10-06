@@ -98,3 +98,5 @@ button:focus:not(:focus-visible),.mb:focus:not(:focus-visible){outline:none}
 /* Training setup steppers */
 .lb{display:flex;flex-direction:column;gap:4px;font-size:15px;color:var(--mute)}.lb[hidden]{display:none}
 .stp{display:flex;gap:6px}.stp button{flex:none;width:46px;padding:0;font-size:26px;line-height:1}.stp input{text-align:center;min-width:0}
+/* photo scoring and backup banner */
+.phs{overflow:auto;max-height:62vh;border-radius:12px;background:#111;-webkit-overflow-scrolling:touch}.phs img{-webkit-user-drag:none;user-select:none}.bkb{border-left:4px solid var(--hold)}

@@ -1,5 +1,9 @@
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const DV=2;
+const MIG={1:d=>{const mp={prec:'s20',c10:'s10',time:'s10',comp:'s60'};if(Array.isArray(d.ses))d.ses.forEach(x=>{if(!x)return;if(mp[x.id])x.id=mp[x.id];if(!Array.isArray(x.shots))x.shots=[]});if(d.cs&&mp[d.cs.id])d.cs.id=mp[d.cs.id];return d}};
+function migrateData(d,v){for(let i=v;i<DV;i++)if(MIG[i])d=MIG[i](d);return d}
+(function(){const v=store.get('dv',null);if(v!==null&&v>=DV)return;const ks=['S','ses','sess','hist','last','mind','plans','cs'];let d={};ks.forEach(k=>{const x=store.get(k,null);if(x!==null)d[k]=x});if(Object.keys(d).length){d=migrateData(d,v||1);ks.forEach(k=>{if(d[k]!==undefined)store.set(k,d[k])})}store.set('dv',DV)})();
 const D={hold:10,relax:10,reps:5,sets:2,rest:30,thr:160,arm:'R',voice:'1',alert:'1',mode:'0',calm:8,raise:4,fol:3,goal:4,xth:10.5,name:'',cq:'1'};
 let S=Object.assign({},D,store.get('S',{}));
 const F=[['hold','Hold (sec)',3,60],['relax','Relax (sec)',3,60],['reps','Reps per set',1,30],['sets','Sets',1,10],['rest','Rest (sec)',5,180],['thr','Straight angle ≥',140,178],['calm','Routine: breathe (sec)',2,30],['raise','Routine: raise (sec)',2,15],['fol','Routine: follow-through (sec)',1,10],['goal','Weekly goal (sessions)',1,21]];
@@ -61,7 +65,7 @@ function onResults(r){
 async function camStart(){
  if(camOn)return;
  try{const v=$('v');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:640},height:{ideal:480}},audio:false});v.srcObject=stream;await v.play();
- pose=pose||new Pose({locateFile:f=>'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/'+f});
+ pose=pose||new Pose({locateFile:f=>'mediapipe/'+f});
  pose.setOptions({modelComplexity:S.cq==='0'?0:1,smoothLandmarks:true,minDetectionConfidence:.5,minTrackingConfidence:.5});pose.onResults(onResults);
  camOn=true;$('camBtn').textContent='Camera off';$('msg').hidden=false;$('msg').textContent='Loading pose model\u2026';
  let lt=0;const loop=async()=>{if(!camOn)return;const t=performance.now();if(t-lt>=66&&v.readyState>=2){lt=t;try{await pose.send({image:v})}catch(e){}}requestAnimationFrame(loop)};loop();
@@ -215,11 +219,11 @@ function renderScore(){const el=$('sc');
  let h='<div class="top"><h2>'+CS.n+'</h2></div><div class="stats3"><div><b>'+sc.length+'/'+CS.len+'</b><span>Shots</span></div><div><b>'+f1(t)+'</b><span>Total</span></div><div><b>'+(sc.length?f1(t/sc.length):'-')+'</b><span>Average · X '+xs+'</span></div></div>';
  if(CS.min)h+='<p class="cue" id="tm"></p>';
  if(CS.pb){const pb=bestBlock(store.get('ses',[]));h+='<p class="cue">'+(pb==null?'No 10-shot best yet. Set one.':'Beat '+f1(pb)+'. Pace after '+sc.length+' shots: '+f1(pb/10*sc.length)+'.')+'</p>'}
- h+='<div class="row" style="margin-bottom:10px"><button id="tt" class="'+(TAB==='t'?'p':'')+'">Target</button><button id="tk" class="'+(TAB==='k'?'p':'')+'">Keypad</button></div>';
- if(TAB==='t')h+=tgtHTML(); else h+='<div class="row"><input id="ks" type="number" inputmode="decimal" step="0.1" min="0" max="10.9" placeholder="Score, e.g. 10.3" style="max-width:200px"><button class="p" id="ka">Add shot</button></div>';
+ h+='<div class="row" style="margin-bottom:10px"><button id="tt" class="'+(TAB==='t'?'p':'')+'">Target</button><button id="tk" class="'+(TAB==='k'?'p':'')+'">Keypad</button><button id="tp2" class="'+(TAB==='p'?'p':'')+'">Photo</button></div>';
+ if(TAB==='t')h+=tgtHTML();else if(TAB==='p')h+=phHTML();else h+='<div class="row"><input id="ks" type="number" inputmode="decimal" step="0.1" min="0" max="10.9" placeholder="Score, e.g. 10.3" style="max-width:200px"><button class="p" id="ka">Add shot</button></div>';
  h+='<p class="note" style="text-align:center;margin-top:10px">'+(sc.slice(-10).map(f1).join(' · ')||'No shots yet')+'</p>'+grp()+'<div class="row"><button id="ud">Undo</button><button id="fn" class="p">Finish</button><button id="ds">Discard</button></div>';
- el.innerHTML=h;$('tt').onclick=()=>{TAB='t';renderScore()};$('tk').onclick=()=>{TAB='k';renderScore()};
- tgtBind();
+ el.innerHTML=h;$('tt').onclick=()=>{TAB='t';renderScore()};$('tk').onclick=()=>{TAB='k';renderScore()};$('tp2').onclick=()=>{TAB='p';renderScore()};
+ tgtBind();phBind();
  if($('ka')){$('ka').onclick=()=>{addShot(parseFloat($('ks').value))};$('ks').onkeydown=e=>{if(e.key==='Enter')$('ka').click()};$('ks').focus()}
  $('ud').onclick=()=>{CS.shots.pop();store.set('cs',CS);renderScore()};$('fn').onclick=finish;
  $('ds').onclick=()=>{if(!DC){DC=1;$('ds').textContent='Tap again to discard';setTimeout(()=>{DC=0;if($('ds'))$('ds').textContent='Discard'},3000);return}DC=0;CS=null;store.set('cs',null);show('home')};tmTick()}
@@ -308,17 +312,62 @@ function pfRender(){
  const tb=$('pbt');tb.innerHTML='';if(!R.length){tb.innerHTML='<tr><td class="note">Score a session in the Match tab to set your first best.</td></tr>'}
  R.forEach(r=>{const tr=document.createElement('tr');r.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i===1)td.style.fontWeight='700';if(i===2)td.className='note';tr.appendChild(td)});tb.appendChild(tr)});
  const bd=$('pbd');bd.innerHTML='';BD.forEach(b=>{const d=document.createElement('div'),ok=b[2](s);if(!ok)d.className='off';const t=document.createElement('b'),u=document.createElement('span');t.textContent=b[0];u.textContent=ok?'Earned':b[1];d.appendChild(t);d.appendChild(u);bd.appendChild(d)})}
-function fillPf(){$('pf_n').value=S.name||'';$('pf_g').value=S.goal;$('pf_x').value=S.xth;$('pf_a').value=S.arm;$('pf_d').value=S.disc||'';$('pf_c').value=S.club||'';$('pf_co').value=S.coach||'';$('pf_ge').value=S.gear||'';$('pf_t').value=S.tgt||'';$('pf_mn').value=S.mn||'';$('pf_md').value=S.md||'';pfRender()}
+function fillPf(){pstat();ocStat();$('pf_n').value=S.name||'';$('pf_g').value=S.goal;$('pf_x').value=S.xth;$('pf_a').value=S.arm;$('pf_d').value=S.disc||'';$('pf_c').value=S.club||'';$('pf_co').value=S.coach||'';$('pf_ge').value=S.gear||'';$('pf_t').value=S.tgt||'';$('pf_mn').value=S.mn||'';$('pf_md').value=S.md||'';pfRender()}
 ['pf_n','pf_g','pf_x','pf_a','pf_d','pf_c','pf_co','pf_ge','pf_t','pf_mn','pf_md'].forEach(i=>$(i).onchange=()=>{S.name=$('pf_n').value.trim();S.goal=Math.min(21,Math.max(1,+$('pf_g').value||4));S.xth=Math.min(10.9,Math.max(10,+$('pf_x').value||10.5));S.arm=$('pf_a').value;S.disc=$('pf_d').value;S.club=$('pf_c').value.trim();S.coach=$('pf_co').value.trim();S.gear=$('pf_ge').value.trim();const t=+$('pf_t').value;S.tgt=t?Math.min(10.9,Math.max(5,t)):0;S.mn=$('pf_mn').value.trim();S.md=$('pf_md').value;store.set('S',S);av();pfRender()});
-function bk(){const o={app:'TEN X',v:1,t:Date.now(),data:{}};ALLK.forEach(k=>{const v=store.get(k,null);if(v!==null)o.data[k]=v});return JSON.stringify(o)}
+function bk(){const o={app:'TEN X',v:DV,t:Date.now(),data:{}};ALLK.forEach(k=>{const v=store.get(k,null);if(v!==null)o.data[k]=v});return JSON.stringify(o)}
 function reloadAll(){S=Object.assign({},D,store.get('S',{}));fill();drawPlans();dash();av();fillPf()}
-$('pf_ex').onclick=()=>{const j=bk(),n='tenx-backup-'+new Date().toISOString().slice(0,10)+'.json';try{const u=URL.createObjectURL(new Blob([j],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);$('pdn').textContent='Backup saved as '+n+'.'}catch(e){(navigator.clipboard?navigator.clipboard.writeText(j):Promise.reject()).then(()=>$('pdn').textContent='Download blocked. Backup copied to the clipboard instead.').catch(()=>$('pdn').textContent='Export is blocked here. Open the page in your own browser.')}};
+$('pf_ex').onclick=()=>{const j=bk(),n='tenx-backup-'+new Date().toISOString().slice(0,10)+'.json';try{const u=URL.createObjectURL(new Blob([j],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);$('pdn').textContent='Backup saved as '+n+'.';setMeta({lb:Date.now()});bkCheck()}catch(e){(navigator.clipboard?navigator.clipboard.writeText(j):Promise.reject()).then(()=>$('pdn').textContent='Download blocked. Backup copied to the clipboard instead.').catch(()=>$('pdn').textContent='Export is blocked here. Open the page in your own browser.')}};
 $('pf_im').onclick=()=>$('pf_fi').click();
-$('pf_fi').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||o.app!=='TEN X'||typeof o.data!=='object')throw 0;if(!confirm('Replace the data on this device with this backup?'))return;ALLK.forEach(k=>{if(o.data[k]!==undefined)store.set(k,o.data[k]);else try{localStorage.removeItem(k)}catch(x){}});reloadAll();$('pdn').textContent='Backup restored.'}catch(x){$('pdn').textContent='That file is not a TEN X backup.'}};r.readAsText(f)};
+$('pf_fi').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||o.app!=='TEN X'||typeof o.data!=='object')throw 0;const ov=o.v||1;if(ov>DV){$('pdn').textContent='This backup is from a newer version of TEN X. Update the app first.';return}o.data=migrateData(o.data,ov);if(!confirm('Replace the data on this device with this backup?'))return;ALLK.forEach(k=>{if(o.data[k]!==undefined)store.set(k,o.data[k]);else try{localStorage.removeItem(k)}catch(x){}});reloadAll();$('pdn').textContent='Backup restored.'}catch(x){$('pdn').textContent='That file is not a TEN X backup.'}};r.readAsText(f)};
 let pck=0;$('pf_cl').onclick=()=>{if(!pck){pck=1;$('pf_cl').textContent='Tap again to erase everything';setTimeout(()=>{pck=0;$('pf_cl').textContent='Clear all data'},3000);return}pck=0;$('pf_cl').textContent='Clear all data';ALLK.forEach(k=>{try{localStorage.removeItem(k)}catch(x){}});S=Object.assign({},D);fill();drawPlans();dash();av();fillPf();$('pdn').textContent='All data cleared.'};
-const _dash=dash;dash=function(){_dash();const t=matchText(),e=$('mcd');if(e){e.textContent=t;e.hidden=!t}};
+const _dash=dash;dash=function(){_dash();bkCheck();const t=matchText(),e=$('mcd');if(e){e.textContent=t;e.hidden=!t}};
 
-// back button handling
+// ===== data protection =====
+const meta=()=>store.get('meta',{}),setMeta=o=>store.set('meta',Object.assign(meta(),o));
+function pstat(){const e=$('pps');if(!e)return;const v='Data version '+DV+'. ';if(!(navigator.storage&&navigator.storage.persisted)){e.textContent=v+'This browser cannot protect storage. Back up regularly.';return}navigator.storage.persisted().then(p=>{e.textContent=v+(p?'Storage is protected: the browser will not clear it automatically.':'Storage is not protected: the browser may clear it if space runs low. Back up regularly.')},()=>{})}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(pstat,pstat)}catch(e){}
+function bkCheck(){const e=$('bkb');if(!e)return;const m=meta(),has=store.get('ses',[]).length||store.get('hist',[]).length,now=Date.now();e.hidden=!(has&&(!m.lb||now-m.lb>21*864e5)&&(!m.sn||now>m.sn));if(!e.hidden)$('bkt').textContent=(m.lb?'Last backup: '+Math.round((now-m.lb)/864e5)+' days ago. ':'You have not made a backup yet. ')+'Your data lives only on this phone.'}
+async function shareBackup(){const j=bk(),n='tenx-backup-'+new Date().toISOString().slice(0,10)+'.json';let f=null;try{f=new File([j],n,{type:'application/json'})}catch(e){}
+ try{if(f&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'TEN X backup'});setMeta({lb:Date.now()});$('pdn').textContent='Backup shared.';bkCheck();return}}catch(e){if(e&&e.name==='AbortError')return}
+ $('pf_ex').click()}
+$('pf_sh').onclick=shareBackup;$('bks').onclick=shareBackup;$('bkl').onclick=()=>{setMeta({sn:Date.now()+7*864e5});bkCheck()};
+// ===== offline camera =====
+const MPF=["pose.js", "pose_landmark_full.tflite", "pose_landmark_lite.tflite", "pose_solution_packed_assets.data", "pose_solution_packed_assets_loader.js", "pose_solution_simd_wasm_bin.js", "pose_solution_simd_wasm_bin.wasm", "pose_solution_wasm_bin.js", "pose_solution_wasm_bin.wasm", "pose_web.binarypb"],MPMB=24;
+function ocStat(){const e=$('poc');if(!e)return;if(!window.caches){e.textContent='Offline storage is not available in this browser.';return}caches.open('tenx-models').then(c=>c.keys()).then(k=>{const n=MPF.filter(f=>k.some(r=>r.url.endsWith('/mediapipe/'+f))).length;e.textContent=n===MPF.length?'Camera is saved on this device and works without internet.':'Not saved yet ('+n+' of '+MPF.length+' files, about '+MPMB+' MB). Download once on Wi-Fi.'}).catch(()=>{})}
+$('pf_oc').onclick=async()=>{const b=$('pf_oc'),e=$('poc');if(!window.caches)return;b.disabled=true;try{const c=await caches.open('tenx-models');let i=0;for(const f of MPF){e.textContent='Saving camera files '+(++i)+' of '+MPF.length+'…';const u='mediapipe/'+f;if(!(await c.match(u))){const r=await fetch(u);if(!r.ok)throw 0;await c.put(u,r)}}ocStat()}catch(x){e.textContent='Could not save all files. Check your connection and try again.'}b.disabled=false};
+// ===== photo scoring =====
+const PT0=()=>({url:'',w:0,h:0,step:0,cx:0,cy:0,ppm:0,z:2,pv:null,sl:0,st:0});let PT=PT0();
+function phClear(){if(PT.url)try{URL.revokeObjectURL(PT.url)}catch(e){}PT=PT0()}
+function phHTML(){
+ if(!PT.url)return '<div class="panel" style="text-align:center"><b class="d h">Score a paper target from a photo</b><p class="note" style="margin:6px 0 12px">Photograph the target straight on so it fills the frame. Line up the rings once, then tap each hole on the zoomed photo. The photo stays on your phone and is not saved.</p><div class="row"><button class="p" id="phc">Take photo</button><button id="phg">Choose photo</button></div><input id="phf" type="file" accept="image/*" capture="environment" hidden><input id="phi" type="file" accept="image/*" hidden></div>';
+ let g='<p class="cue" id="phm" style="min-height:48px"></p><div class="phs" id="phs"><div id="phw" style="position:relative;width:'+PT.z*100+'%"><img id="pimg" src="'+PT.url+'" alt="Target photo" style="width:100%;display:block"><svg id="pov" viewBox="0 0 '+PT.w+' '+PT.h+'" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg></div></div>';
+ g+='<div class="row" style="margin:10px 0"><button id="phzo">Zoom −</button><button id="phzi">Zoom +</button><button id="phra">Redo alignment</button><button id="phrm">New photo</button></div>';
+ g+='<div id="phc3"><div class="panel" style="text-align:center;margin:0 0 8px"><b class="d" id="pvs2" style="font-size:48px;line-height:1;display:block">–</b><span class="note" id="pvd2"></span></div><div class="row" style="margin-bottom:8px"><button id="pnL" aria-label="Nudge left">←</button><button id="pnU" aria-label="Nudge up">↑</button><button id="pnD" aria-label="Nudge down">↓</button><button id="pnR" aria-label="Nudge right">→</button></div><div class="row"><button class="p" id="phok">Confirm shot</button><button id="phx">Clear</button></div></div>';
+ g+='<p class="note" style="text-align:center;margin-top:8px">Rings are drawn at real size from the 155.5 mm outer ring you tap. Align before adding shots. A photo taken at an angle will skew the scores. Scored by the pellet\u2019s inner edge, same as the Target tab.</p>';
+ return g}
+function phUp(){const o=$('pov');if(!o)return;const k=PT.w/450,ppm=PT.ppm;let s='';
+ if(PT.step===2)s+='<path d="M'+(PT.cx-12*k)+' '+PT.cy+'H'+(PT.cx+12*k)+'M'+PT.cx+' '+(PT.cy-12*k)+'V'+(PT.cy+12*k)+'" stroke="#ffd23f" stroke-width="'+2*k+'"/>';
+ if(PT.step>=3){RGS.forEach(r=>s+='<circle cx="'+PT.cx+'" cy="'+PT.cy+'" r="'+r*ppm+'" fill="none" stroke="#ffd23f" stroke-width="'+k+'" opacity=".85"/>');s+='<path d="M'+(PT.cx-8*ppm)+' '+PT.cy+'H'+(PT.cx+8*ppm)+'M'+PT.cx+' '+(PT.cy-8*ppm)+'V'+(PT.cy+8*ppm)+'" stroke="#ffd23f" stroke-width="'+k+'" opacity=".6"/>';
+  CS.shots.filter(q=>q.x!=null).forEach(q=>{s+='<circle cx="'+(PT.cx+q.x*ppm)+'" cy="'+(PT.cy+q.y*ppm)+'" r="'+PR*ppm+'" fill="#ff5a4a" fill-opacity=".45" stroke="#ff5a4a" stroke-width="'+k+'"/>'});
+  if(PT.pv){const x=PT.cx+PT.pv.x*ppm,y=PT.cy+PT.pv.y*ppm;s+='<circle cx="'+x+'" cy="'+y+'" r="'+PR*ppm+'" fill="#ffd23f" fill-opacity=".25" stroke="#ffd23f" stroke-width="'+1.5*k+'"/><path d="M'+(x-6*ppm)+' '+y+'H'+(x-2.6*ppm)+'M'+(x+2.6*ppm)+' '+y+'H'+(x+6*ppm)+'M'+x+' '+(y-6*ppm)+'V'+(y-2.6*ppm)+'M'+x+' '+(y+2.6*ppm)+'V'+(y+6*ppm)+'" stroke="#ffd23f" stroke-width="'+k+'"/>'}}
+ o.innerHTML=s;$('phm').textContent=PT.step===1?'Step 1 of 2: tap the exact centre of the bullseye.':PT.step===2?'Step 2 of 2: tap any point on the outer edge of the outside ring (ring 1).':'Tap a hole to place the marker, nudge it if needed, then confirm. Zoom in for accuracy.';
+ $('phc3').style.display=PT.step===3?'':'none';const has=PT.step===3&&!!PT.pv;$('phok').disabled=!has;$('phx').disabled=!has;
+ if(has){const sc=pel(PT.pv.x,PT.pv.y);$('pvs2').textContent=f1(sc);$('pvd2').textContent=(sc===0?'Miss · ':'')+Math.hypot(PT.pv.x,PT.pv.y).toFixed(1)+' mm from centre'+(sc>=XT()?' · inner ten':'')}else{$('pvs2').textContent='–';$('pvd2').textContent='Tap a hole on the photo'}}
+function phLoad(f){if(!f)return;phClear();const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{PT=Object.assign(PT0(),{url:u,w:im.naturalWidth,h:im.naturalHeight,step:1,z:1});renderScore()};im.onerror=()=>{URL.revokeObjectURL(u);toast('Could not open that photo')};im.src=u}
+function phBind(){
+ if($('phf')){$('phc').onclick=()=>$('phf').click();$('phg').onclick=()=>$('phi').click();$('phf').onchange=e=>{phLoad(e.target.files[0]);e.target.value=''};$('phi').onchange=e=>{phLoad(e.target.files[0]);e.target.value=''};return}
+ if(!$('phs'))return;const s=$('phs'),w=$('phw');requestAnimationFrame(()=>{s.scrollLeft=PT.sl;s.scrollTop=PT.st});s.onscroll=()=>{PT.sl=s.scrollLeft;PT.st=s.scrollTop};
+ w.onclick=e=>{const r=$('pimg').getBoundingClientRect(),x=(e.clientX-r.left)/r.width*PT.w,y=(e.clientY-r.top)/r.height*PT.h;
+  if(PT.step===1){PT.cx=x;PT.cy=y;PT.step=2}else if(PT.step===2){const d=Math.hypot(x-PT.cx,y-PT.cy);if(d<20)return;PT.ppm=d/RMAX;PT.step=3}else PT.pv={x:Math.round((x-PT.cx)/PT.ppm*100)/100,y:Math.round((y-PT.cy)/PT.ppm*100)/100};phUp()};
+ const zm=d=>{const a=(s.scrollLeft+s.clientWidth/2)/s.scrollWidth,b=(s.scrollTop+s.clientHeight/2)/s.scrollHeight;PT.z=Math.min(8,Math.max(1,PT.z+d));w.style.width=PT.z*100+'%';s.scrollLeft=a*s.scrollWidth-s.clientWidth/2;s.scrollTop=b*s.scrollHeight-s.clientHeight/2};
+ $('phzi').onclick=()=>zm(1);$('phzo').onclick=()=>zm(-1);
+ $('phra').onclick=()=>{PT.step=1;PT.pv=null;phUp()};$('phrm').onclick=()=>{phClear();renderScore()};
+ const nd=(dx,dy)=>{if(!PT.pv)return;PT.pv={x:Math.round((PT.pv.x+dx*.25)*100)/100,y:Math.round((PT.pv.y+dy*.25)*100)/100};phUp()};
+ $('pnL').onclick=()=>nd(-1,0);$('pnR').onclick=()=>nd(1,0);$('pnU').onclick=()=>nd(0,-1);$('pnD').onclick=()=>nd(0,1);
+ $('phx').onclick=()=>{PT.pv=null;phUp()};
+ $('phok').onclick=()=>{if(!PT.pv)return;const q=PT.pv,mt=document.querySelector('main').scrollTop;PT.sl=s.scrollLeft;PT.st=s.scrollTop;PT.pv=null;addShot(pel(q.x,q.y),q.x,q.y);document.querySelector('main').scrollTop=mt};
+ phUp()}
+// ===== back button handling
 let CV='home',navOn=true,exArm=0;
 history.replaceState({root:1},'');history.pushState({v:'home'},'');
 const _s2=show;show=function(n){_s2(n);if(navOn&&n!==CV)history.pushState({v:n},'');CV=n};
