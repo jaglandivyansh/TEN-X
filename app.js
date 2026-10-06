@@ -6,7 +6,7 @@ const F=[['hold','Hold (sec)',3,60],['relax','Relax (sec)',3,60],['reps','Reps p
 const LV=[[5,5],[8,5],[10,6],[12,6],[15,8],[20,8]];
 let pose,camOn=false,stream=null,cur={ok:false},run=null,samples=[],facing='user',mirror=true;
 // navigation
-function show(n){if(n!=='train')leaveTrain();document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='v-'+n);window.scrollTo(0,0);if(n==='history')drawHist();if(n==='home')homeInfo();if(n==='settings')fill();if(n==='train')$('plan').textContent=(S.mode==='1'?'Shot routine · ':'')+S.hold+'s hold · '+S.relax+'s relax · '+S.reps+' reps × '+S.sets+' sets'}
+function show(n){if(n!=='train')leaveTrain();document.querySelectorAll('.view').forEach(s=>s.hidden=s.id!=='v-'+n);document.querySelector('main').scrollTop=0;if(n==='history')drawHist();if(n==='home')homeInfo();if(n==='settings')fill();if(n==='train')$('plan').textContent=(S.mode==='1'?'Shot routine · ':'')+S.hold+'s hold · '+S.relax+'s relax · '+S.reps+' reps × '+S.sets+' sets'}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)show(b.dataset.go)});
 function leaveTrain(){if(run){clearInterval(run.timer);run=null}rel();camStop();try{speechSynthesis.cancel()}catch(e){}}
 // settings

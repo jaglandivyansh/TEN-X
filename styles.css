@@ -83,3 +83,8 @@ td,th{padding:9px 6px;font-size:15px}#cr td,#res td,#res th,#rec td,#rec th,#cr 
 .bd{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.bd div{border:1px solid var(--hold);border-radius:10px;padding:10px}.bd div.off{border-color:var(--line);opacity:.5}.bd b{display:block;font:800 19px/1.1 'Saira Condensed',Impact,sans-serif}.bd span{font-size:13px;color:var(--mute);line-height:1.3}
 .pcd{border-left:4px solid var(--hold)}.fl{margin-top:10px}.dr{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.dr button{flex:1;min-width:120px;font-size:18px}
 button:disabled{opacity:.45;cursor:default}
+
+/* App shell: the top bar and bottom nav never move; only <main> scrolls */
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+:root{padding-top:0;padding-bottom:0}
+main{position:fixed;inset:0;max-width:none;margin:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:calc(64px + env(safe-area-inset-top,0px)) max(16px,calc((100vw - 560px)/2 + 16px)) calc(96px + env(safe-area-inset-bottom,0px))}

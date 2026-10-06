@@ -1,5 +1,5 @@
 // TEN X service worker: network first, cached copy as the offline fallback.
-const V = 'tenx-v3';
+const V = 'tenx-v4';
 const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'manifest.webmanifest', 'icon-192.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => Promise.all(FILES.map(f => c.add(f).catch(() => {})))).then(() => self.skipWaiting()));
