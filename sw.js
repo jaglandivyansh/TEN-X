@@ -1,7 +1,18 @@
-const C='tenx-v6',A=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);
- if(r.mode==='navigate'){e.respondWith(fetch(r).catch(()=>caches.match('index.html')));return}
- if(!(u.origin===location.origin||/cdn\.jsdelivr\.net|fonts\.(googleapis|gstatic)\.com/.test(u.host)))return;
- e.respondWith(caches.match(r).then(h=>h||fetch(r).then(n=>{if(n&&(n.ok||n.type==='opaque')){const cp=n.clone();caches.open(C).then(c=>c.put(r,cp))}return n})))});
+// TEN X service worker: network first, cached copy as the offline fallback.
+const V = 'tenx-v3';
+const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'logo.png', 'manifest.webmanifest', 'icon-192.png'];
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(V).then(c => Promise.all(FILES.map(f => c.add(f).catch(() => {})))).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+});
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    fetch(e.request).then(r => {
+      if (new URL(e.request.url).origin === location.origin && r.ok) { const c = r.clone(); caches.open(V).then(x => x.put(e.request, c)); }
+      return r;
+    }).catch(() => caches.match(e.request).then(r => r || caches.match('index.html')))
+  );
+});
